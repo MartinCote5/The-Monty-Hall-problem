@@ -10,146 +10,102 @@ class Statistics {
 
 class Game {
     constructor() {
-        this.doors;  // ma liste de porte sans la door picked
-        this.doorPicked;  // la porte que tu choisis random 1 a 3 dans la liste de doors
-        this.openedGoatDoor; // la porte qui va etre ouverte, ne doit pas etre la porte picked ou la doors que is car est true
-        this.finalPick;  // 
-        this.won;  // boolean
+        this.doors = []  
+        this.doorPicked;
+        this.openedGoatDoor;
+        this.finalPick;  
+        this.won;
     }
     //Add any method needed
     CreateAllDoors() {
         let doorList = [1, 2, 3];
-        console.log(doorList)
-        Math.random();
-        // let pickedDoorNumber = Math.floor(Math.random() * 3) + 1;
-        let randomDoor = Math.floor(Math.random() * 3) + 1;
-
-        let indexOfCarDoor = doorList.indexOf(randomDoor);
-        doorList.splice(indexOfCarDoor, 1)
-
+        let randomDoorIndex = Math.floor(Math.random() * 3);
+        let carDoor = new Door(doorList[randomDoorIndex], true)
+        doorList.splice(randomDoorIndex, 1)
         let goatDoor1 = new Door(doorList[0], false)
         let goatDoor2 = new Door(doorList[1], false)
-        let carDoor = new Door(randomDoor, true)
-
-
-
-
-        console.log(randomDoor)
-        console.log(indexOfCarDoor)
-        console.log(doorList)
-
-        console.log("-----------------------")
-        console.log(goatDoor1)
-        console.log(goatDoor2)
-        console.log(carDoor)
-
-        this.openingGoatDoor(doorList)
-        console.log(indexOfGoatDoorOpened, "workikng?")
-
-        
-
+        this.doors.push(goatDoor1, goatDoor2, carDoor)
     }
 
-    openingGoatDoor(doorListofGoatDoor) {
-        console.log("eeeeeeee")
-        console.log(doorListofGoatDoor)
-        let randomOpenedDoor = Math.floor(Math.random() * 2) + 1;
-        console.log(randomOpenedDoor)
+    pickDoor() {
+        let randomDoorIndex = Math.floor(Math.random() * 3);
+        this.doorPicked = this.doors[randomDoorIndex]
+        this.doors.splice(randomDoorIndex, 1)
+    }
 
-        let indexOfGoatDoorOpened = doorListofGoatDoor.indexOf(randomOpenedDoor)
-        return indexOfGoatDoorOpened
+    openingGoatDoor() {
+        if (this.doors[0].isCar == false) {
+            this.openedGoatDoor = this.doors[0]
+            this.doors.splice(0, 1)
+        } else {
+            this.openedGoatDoor = this.doors[1]
+            this.doors.splice(1, 1)
+        }  
+    }
 
+    changingDoor() {
+        this.doorPicked = this.doors[0]
+    }
 
+    winOrLose() {
+        if (this.doorPicked.isCar == true) {
+            return true
+        } else {
+            return false 
+        }
     }
 }
 
 
 class Door {
     constructor(number, isCar) {
-        this.number = number;  // numero de la porte en question
-        this.isCar = isCar;  // boolean 
-        this.opened = false;  // si la porte cest ouverte
+        this.number = number; 
+        this.isCar = isCar;  
+        this.opened = false; 
     }
 }
 
 
-// 2 loop avec une ou la personne change et une ou a personne ne change pas. et ma variable de conteur a part.
-
-numberOfSimulation = 10
+// 2 different loops where the chosen door keeps one the first one and changed in the second loop
+// Simulation Start
+numberOfSimulation = 555
+let stats = new Statistics
 
 
 // Loop keeping the initial door
 for (let i = 0; i < numberOfSimulation; i++) {
     game = new Game
     game.CreateAllDoors()
-    console.log("myloopkeeping")
-
-   
-
-  }
+    game.pickDoor()
+    game.openingGoatDoor()
+    if(game.winOrLose()) {
+        stats.gamesWithSameDoorWon.push(game)
+    } else {
+        stats.gamesWithSameDoorLost.push(game)    
+    }
+}
+//calculate the result without changing door
+percentageOfWonWithoutChangingDoor = stats.gamesWithSameDoorWon.length /(stats.gamesWithSameDoorWon.length+ stats.gamesWithSameDoorLost.length) * 100 
 
 
 // Loop switching the initial door
 for (let i = 0; i < numberOfSimulation; i++) {
-    
-
-    console.log("myloopswitching")
+    game = new Game
+    game.CreateAllDoors()
+    game.pickDoor()
+    game.openingGoatDoor()
+    game.changingDoor()
+    if(game.winOrLose()) {
+        stats.gamesWithDoorChangeWon.push(game)
+    } else {
+        stats.gamesWithDoorChangeLost.push(game)    
+    }
   }
+  //calculate the result while changing door
+  percentageOfWonWhileChangingDoor = stats.gamesWithDoorChangeWon.length /(stats.gamesWithDoorChangeWon.length+ stats.gamesWithDoorChangeLost.length) * 100 
 
 
-
-
-
-
-
-// // other exemple unrelated just to get back in the game
-
-// class Rectangle {
-//     constructor(height, width) {
-//       this.height = height;
-//       this.width = width;
-//     }
-
-//     // Getter
-//     get area() {
-//       return this.calcArea();
-//     }
-//     get perimeter() {
-//       return this.calcPerimeter();
-//     }
-
-//     // Method
-//     calcArea() {
-//       return this.height * this.width;
-//     }
-
-//     calcPerimeter() {
-//       return this.height + this.width;
-//     }
-//   }
+  //logging the result
+  console.log(`game won without changing door is ${percentageOfWonWithoutChangingDoor} %`)
+  console.log(`game won while changing door is ${percentageOfWonWhileChangingDoor} %`)
   
-
-
-//   const square = new Rectangle(10, 10);
-//   let myShape = new Rectangle(5, 5);
-
-// //   calcArea()
-  
-//   console.log(square.area); // 100
-//   console.log("test")
-//   console.log(myShape)
-//   console.log(myShape.calcPerimeter)
-
-//   console.log("------------------------------")
-//   console.log(myShape.perimeter)
-//   console.log("------------------------------")
-//   x = myShape.calcPerimeter()
-//   console.log(x)
-//   console.log("------------------------------")
-//   console.log(myShape.calcPerimeter())
-
-
-//   // question a quoi servent les getter et les setter de mes rectangles au final?
-
-
-
